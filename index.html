@@ -9,8 +9,9 @@
             margin: 0;
             padding: 0;
             font-family: 'TT Fors', sans-serif;
-            background: url('landscape menu screen BACK .jpg') no-repeat center center fixed;
+            background: url('https://your-image-url.jpg') no-repeat center center fixed;
             background-size: cover;
+            height: 100vh;
         }
 
         .menu-container {
@@ -18,6 +19,8 @@
             flex-wrap: wrap;
             justify-content: center;
             margin-top: 20px;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .day-box {
@@ -26,6 +29,7 @@
             padding: 20px;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 10px;
+            box-sizing: border-box;
         }
 
         .day-box h2 {
@@ -52,31 +56,48 @@
 <script>
     window.onload = function() {
         Tabletop.init({
-            key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',  // replace with your actual URL
+            key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',
             simpleSheet: true,
             callback: function(data) {
                 let menuContainer = document.getElementById('menu');
                 let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
                 days.forEach(day => {
-                    let dayMenu = data.filter(item => item.Day === day);
+                    let dayData = data.find(row => row.Day === day);
+                    if (!dayData) return;  // Skip if no data found for the day
+                    
                     let dayBox = document.createElement('div');
                     dayBox.className = 'day-box';
+
                     let dayTitle = document.createElement('h2');
                     dayTitle.textContent = day;
                     dayBox.appendChild(dayTitle);
 
-                    dayMenu.forEach(item => {
-                        let dish = document.createElement('div');
-                        dish.className = 'dish';
-                        dish.textContent = `${item.Type}: ${item.Dish}`;
-                        dayBox.appendChild(dish);
+                    // Hot Food
+                    if (dayData["Hot Food"]) {
+                        let hotDish = document.createElement('div');
+                        hotDish.className = 'dish';
+                        hotDish.textContent = `Hot: ${dayData["Hot Food"]}`;
+                        dayBox.appendChild(hotDish);
 
-                        let kcalPrice = document.createElement('div');
-                        kcalPrice.className = 'kcal-price';
-                        kcalPrice.textContent = `${item.kcal} kcal - £${item.Price}`;
-                        dayBox.appendChild(kcalPrice);
-                    });
+                        let hotInfo = document.createElement('div');
+                        hotInfo.className = 'kcal-price';
+                        hotInfo.textContent = `${dayData["kcal (Hot)"]} kcal - £${dayData["Price (Hot)"]}`;
+                        dayBox.appendChild(hotInfo);
+                    }
+
+                    // Soup
+                    if (dayData["Soup"]) {
+                        let soupDish = document.createElement('div');
+                        soupDish.className = 'dish';
+                        soupDish.textContent = `Soup: ${dayData["Soup"]}`;
+                        dayBox.appendChild(soupDish);
+
+                        let soupInfo = document.createElement('div');
+                        soupInfo.className = 'kcal-price';
+                        soupInfo.textContent = `${dayData["kcal (Soup)"]} kcal - £${dayData["Price (Soup)"]}`;
+                        dayBox.appendChild(soupInfo);
+                    }
 
                     menuContainer.appendChild(dayBox);
                 });
