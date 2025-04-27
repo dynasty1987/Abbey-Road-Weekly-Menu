@@ -1,117 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abbey Road Weekly Menu</title>
-    <style>
-        /* Loading TT Fors font */
-        @font-face {
-            font-family: 'TT Fors';
-            src: url('TT-Fors-Bold.otf') format('opentype');
-            font-weight: normal;
-            font-style: normal;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Menu</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'TT Fors', sans-serif;
+      background-image: url('background.jpg'); /* Make sure the image is in the same folder */
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      text-align: center;
+    }
 
-        /* General styles */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'TT Fors', sans-serif;
-            background: url('background.jpg') no-repeat center center fixed;
-            background-size: cover;  /* Ensures the image covers the whole screen */
-            overflow: auto;
-        }
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 90%;
+    }
 
-        /* Menu container for all days */
-        .menu-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 50px;  /* Adjust top margin for spacing */
-        }
+    .day-box {
+      width: 150px;
+      height: 200px;
+      background: rgba(0, 0, 0, 0.5);
+      margin: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
 
-        /* Each day box */
-        .day-box {
-            width: 300px;
-            margin: 10px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.7);  /* Transparent white background */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+    .day-box h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
 
-        /* Day title */
-        .day-box h2 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
+    .dish {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
 
-        /* Dish styling */
-        .dish {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        /* Kcal and price styling */
-        .kcal-price {
-            font-size: 16px;
-        }
-    </style>
+    .price {
+      font-size: 14px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Menu container where the dishes will be displayed -->
-<div class="menu-container" id="menu"></div>
+  <div class="menu" id="menu-container">
+    <!-- Menu items will be populated here -->
+  </div>
 
-<!-- Load Tabletop.js Script -->
-<script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0"></script>
-<script>
-    window.onload = function() {
-        // Initialize Tabletop.js to fetch data from the Google Sheets
-        Tabletop.init({
-            key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pub?output=csv',
-            simpleSheet: true,
-            callback: function(data) {
-                // Ensure that the data is being fetched correctly
-                console.log(data);  // Check the fetched data in your browser's console
-                
-                // Get the container to append the menu items
-                let menuContainer = document.getElementById('menu');
-                let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  <script>
+    // Ensure the Google Sheet is published as CSV
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pub?output=csv';
 
-                // Loop through each day and create a box for each
-                days.forEach(day => {
-                    let dayMenu = data.filter(item => item.Day === day);
-                    let dayBox = document.createElement('div');
-                    dayBox.className = 'day-box';
-                    let dayTitle = document.createElement('h2');
-                    dayTitle.textContent = day;
-                    dayBox.appendChild(dayTitle);
+    // Fetch the CSV data
+    fetch(sheetUrl)
+      .then(response => response.text())  // Get the CSV as text
+      .then(data => {
+        const parsedData = parseCSV(data);
+        displayMenu(parsedData);
+      })
+      .catch(error => console.error('Error fetching the CSV data:', error));
 
-                    // Loop through the menu items for each day
-                    dayMenu.forEach(item => {
-                        let dish = document.createElement('div');
-                        dish.className = 'dish';
-                        dish.textContent = `${item.Type}: ${item.Dish}`;
-                        dayBox.appendChild(dish);
-
-                        let kcalPrice = document.createElement('div');
-                        kcalPrice.className = 'kcal-price';
-                        kcalPrice.textContent = `${item.kcal} kcal - £${item.Price}`;
-                        dayBox.appendChild(kcalPrice);
-                    });
-
-                    // Append the day box to the menu container
-                    menuContainer.appendChild(dayBox);
-                });
-            }
-        });
+    // Function to parse CSV string into an array of rows
+    function parseCSV(data) {
+      const rows = data.split('\n');
+      const menuData = rows.slice(1).map(row => {
+        const columns = row.split(',');  // Split by comma (CSV format)
+        return {
+          day: columns[1],  // Day name
+          hotDish: columns[2],  // Hot Dish
+          hotPrice: columns[5],  // Hot Dish Price
+          soup: columns[9],  // Soup
+          soupPrice: columns[11],  // Soup Price
+          deli: columns[13],  // Deli
+          deliPrice: columns[15]  // Deli Price
+        };
+      });
+      return menuData;
     }
-</script>
+
+    // Function to display menu items
+    function displayMenu(menuData) {
+      const menuContainer = document.getElementById('menu-container');
+
+      menuData.forEach(item => {
+        const dayBox = document.createElement('div');
+        dayBox.classList.add('day-box');
+
+        const dayTitle = document.createElement('h3');
+        dayTitle.textContent = item.day;
+
+        const hotDish = document.createElement('p');
+        hotDish.classList.add('dish');
+        hotDish.textContent = `Hot: ${item.hotDish} - £${item.hotPrice}`;
+
+        const soup = document.createElement('p');
+        soup.classList.add('dish');
+        soup.textContent = `Soup: ${item.soup} - £${item.soupPrice}`;
+
+        const deli = document.createElement('p');
+        deli.classList.add('dish');
+        deli.textContent = `Deli: ${item.deli} - £${item.deliPrice}`;
+
+        dayBox.appendChild(dayTitle);
+        dayBox.appendChild(hotDish);
+        dayBox.appendChild(soup);
+        dayBox.appendChild(deli);
+
+        menuContainer.appendChild(dayBox);
+      });
+    }
+  </script>
 
 </body>
 </html>
