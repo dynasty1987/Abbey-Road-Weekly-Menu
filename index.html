@@ -2,61 +2,179 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Abbey Road Weekly Menu</title>
-</head>
-<body>
-  <div id="menu"></div>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weekly Menu</title>
+  
+  <!-- Load your TT Fors font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> <!-- replace with TT Fors if hosted -->
 
-  <script>
-    async function loadMenu() {
-      const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pub?output=csv');
-      const csvText = await response.text();
-
-      const rows = csvText.split('\n').map(row => row.split(','));
-
-      const headers = rows[0];
-      const data = rows.slice(1).map(row => {
-        const obj = {};
-        row.forEach((cell, i) => {
-          obj[headers[i]] = cell;
-        });
-        return obj;
-      });
-
-      const menuContainer = document.getElementById('menu');
-      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-      days.forEach(day => {
-        const dayMenu = data.filter(item => item.Day === day);
-
-        if (dayMenu.length > 0) {
-          const dayBox = document.createElement('div');
-          dayBox.style.border = '1px solid #ccc';
-          dayBox.style.padding = '10px';
-          dayBox.style.marginBottom = '10px';
-          dayBox.innerHTML = `<h2>${day}</h2>`;
-
-          dayMenu.forEach(item => {
-            if (item["Hot Dishes"]) {
-              dayBox.innerHTML += `<p><strong>Hot:</strong> ${item["Hot Dishes"]} (${item["Hot Kcal"]}) - ${item["Hot Dish Price"]}</p>`;
-            }
-            if (item["Soup"]) {
-              dayBox.innerHTML += `<p><strong>Soup:</strong> ${item["Soup"]} (${item["Soup Kcal"]}) - ${item["Soup Price"]}</p>`;
-            }
-            if (item["Deli"]) {
-              dayBox.innerHTML += `<p><strong>Deli:</strong> ${item["Deli"]} (${item["Deli Kcal"]})</p>`;
-            }
-            if (item["Composite Salads"]) {
-              dayBox.innerHTML += `<p><strong>Salad:</strong> ${item["Composite Salads"]} (${item["Salad Kcal"]})</p>`;
-            }
-          });
-
-          menuContainer.appendChild(dayBox);
-        }
-      });
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Roboto', sans-serif; /* replace with TT Fors later */
     }
 
-    loadMenu();
-  </script>
+    #container {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background-image: url('background.png'); /* Your background file */
+      background-size: cover;
+      background-position: center;
+      margin: 0 auto;
+    }
+
+    .menu-box {
+      position: absolute;
+      font-size: 28px;
+      color: #000;
+      text-align: center;
+      overflow: hidden;
+      line-height: 1.2;
+      padding: 5px;
+      word-wrap: break-word;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-overflow: ellipsis;
+    }
+
+    /* --- Position each text box exactly --- */
+    #monday-hot {
+      top: 100px;
+      left: 150px;
+      width: 250px;
+      height: 120px;
+    }
+    #monday-soup {
+      top: 230px;
+      left: 150px;
+      width: 250px;
+      height: 80px;
+    }
+
+    #tuesday-hot {
+      top: 100px;
+      left: 450px;
+      width: 250px;
+      height: 120px;
+    }
+    #tuesday-soup {
+      top: 230px;
+      left: 450px;
+      width: 250px;
+      height: 80px;
+    }
+
+    #wednesday-hot {
+      top: 100px;
+      left: 750px;
+      width: 250px;
+      height: 120px;
+    }
+    #wednesday-soup {
+      top: 230px;
+      left: 750px;
+      width: 250px;
+      height: 80px;
+    }
+
+    #thursday-hot {
+      top: 100px;
+      left: 1050px;
+      width: 250px;
+      height: 120px;
+    }
+    #thursday-soup {
+      top: 230px;
+      left: 1050px;
+      width: 250px;
+      height: 80px;
+    }
+
+    #friday-hot {
+      top: 100px;
+      left: 1350px;
+      width: 250px;
+      height: 120px;
+    }
+    #friday-soup {
+      top: 230px;
+      left: 1350px;
+      width: 250px;
+      height: 80px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="container">
+  <!-- Dynamic boxes -->
+  <div id="monday-hot" class="menu-box"></div>
+  <div id="monday-soup" class="menu-box"></div>
+
+  <div id="tuesday-hot" class="menu-box"></div>
+  <div id="tuesday-soup" class="menu-box"></div>
+
+  <div id="wednesday-hot" class="menu-box"></div>
+  <div id="wednesday-soup" class="menu-box"></div>
+
+  <div id="thursday-hot" class="menu-box"></div>
+  <div id="thursday-soup" class="menu-box"></div>
+
+  <div id="friday-hot" class="menu-box"></div>
+  <div id="friday-soup" class="menu-box"></div>
+</div>
+
+<script>
+  const sheetID = "2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs";
+  const sheetURL = `https://docs.google.com/spreadsheets/d/e/${sheetID}/pub?output=csv`;
+
+  async function loadMenu() {
+    const response = await fetch(sheetURL);
+    const data = await response.text();
+    const rows = data.split("\n").slice(1); // skip headers
+
+    const menu = {};
+
+    rows.forEach(row => {
+      const cols = row.split(",");
+      const day = cols[1].trim().toLowerCase(); // assuming Day in column B
+      const hot = cols[2]?.trim();  // Hot Item (column C)
+      const soup = cols[9]?.trim(); // Soup Item (column J)
+
+      if (day && hot) menu[`${day}-hot`] = hot;
+      if (day && soup) menu[`${day}-soup`] = soup;
+    });
+
+    for (const id in menu) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.innerText = menu[id];
+        fitText(el, 28); // 28 is the base font size
+      }
+    }
+  }
+
+  // Automatically shrink text if it overflows
+  function fitText(element, maxFontSize) {
+    let fontSize = maxFontSize;
+    element.style.fontSize = fontSize + "px";
+
+    while ((element.scrollHeight > element.offsetHeight || element.scrollWidth > element.offsetWidth) && fontSize > 10) {
+      fontSize--;
+      element.style.fontSize = fontSize + "px";
+    }
+  }
+
+  loadMenu();
+</script>
+
 </body>
 </html>
