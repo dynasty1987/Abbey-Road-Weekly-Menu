@@ -1,51 +1,56 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Abbey Road Weekly Menu</title>
+</head>
+<body>
+  <div id="menu"></div>
+
+  <!-- Load Tabletop.js first -->
+  <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/tabletop.min.js"></script>
+
+  <!-- Then your custom script -->
+  <script>
     document.addEventListener('DOMContentLoaded', function () {
-        Tabletop.init({
-            key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',
-            simpleSheet: true,
-            callback: function(data) {
-                let menuContainer = document.getElementById('menu');
-                let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+      Tabletop.init({
+        key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',
+        simpleSheet: true,
+        callback: function (data) {
+          const menuContainer = document.getElementById('menu');
+          const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-                days.forEach(day => {
-                    let dayMenu = data.filter(item => item.Day === day);
-                    let dayBox = document.createElement('div');
-                    dayBox.className = 'day-box';
+          days.forEach(day => {
+            const dayMenu = data.filter(item => item.Day === day);
 
-                    let dayTitle = document.createElement('h2');
-                    dayTitle.textContent = day;
-                    dayBox.appendChild(dayTitle);
+            if (dayMenu.length > 0) {
+              const dayBox = document.createElement('div');
+              dayBox.style.border = '1px solid #ccc';
+              dayBox.style.padding = '10px';
+              dayBox.style.marginBottom = '10px';
+              dayBox.innerHTML = `<h2>${day}</h2>`;
 
-                    dayMenu.forEach(item => {
-                        // Hot Dish
-                        if (item["Hot Dishes"]) {
-                            let hotDish = document.createElement('div');
-                            hotDish.innerHTML = `<strong>Hot:</strong> ${item["Hot Dishes"]} (${item["Hot Kcal"]}) - ${item["Hot Dish Price"]}`;
-                            dayBox.appendChild(hotDish);
-                        }
-                        // Soup
-                        if (item["Soup"]) {
-                            let soupDish = document.createElement('div');
-                            soupDish.innerHTML = `<strong>Soup:</strong> ${item["Soup"]} (${item["Soup Kcal"]}) - ${item["Soup Price"]}`;
-                            dayBox.appendChild(soupDish);
-                        }
-                        // Deli
-                        if (item["Deli"]) {
-                            let deliDish = document.createElement('div');
-                            deliDish.innerHTML = `<strong>Deli:</strong> ${item["Deli"]} (${item["Deli Kcal"]})`;
-                            dayBox.appendChild(deliDish);
-                        }
-                        // Salad
-                        if (item["Composite Salads"]) {
-                            let saladDish = document.createElement('div');
-                            saladDish.innerHTML = `<strong>Salad:</strong> ${item["Composite Salads"]} (${item["Salad Kcal"]})`;
-                            dayBox.appendChild(saladDish);
-                        }
-                    });
+              dayMenu.forEach(item => {
+                if (item["Hot Dishes"]) {
+                  dayBox.innerHTML += `<p><strong>Hot:</strong> ${item["Hot Dishes"]} (${item["Hot Kcal"]}) - ${item["Hot Dish Price"]}</p>`;
+                }
+                if (item["Soup"]) {
+                  dayBox.innerHTML += `<p><strong>Soup:</strong> ${item["Soup"]} (${item["Soup Kcal"]}) - ${item["Soup Price"]}</p>`;
+                }
+                if (item["Deli"]) {
+                  dayBox.innerHTML += `<p><strong>Deli:</strong> ${item["Deli"]} (${item["Deli Kcal"]})</p>`;
+                }
+                if (item["Composite Salads"]) {
+                  dayBox.innerHTML += `<p><strong>Salad:</strong> ${item["Composite Salads"]} (${item["Salad Kcal"]})</p>`;
+                }
+              });
 
-                    menuContainer.appendChild(dayBox);
-                });
+              menuContainer.appendChild(dayBox);
             }
-        });
+          });
+        }
+      });
     });
-</script>
+  </script>
+</body>
+</html>
