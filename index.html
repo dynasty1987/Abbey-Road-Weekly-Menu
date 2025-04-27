@@ -60,20 +60,9 @@
         .kcal-price {
             font-size: 16px;
         }
-
-        /* Styling the whole page */
-        h1 {
-            text-align: center;
-            font-size: 36px;
-            color: #fff;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
-
-<!-- Page Title -->
-<h1>Abbey Road Weekly Menu</h1>
 
 <!-- Menu container where the dishes will be displayed -->
 <div class="menu-container" id="menu"></div>
@@ -84,7 +73,7 @@
     window.onload = function() {
         // Initialize Tabletop.js to fetch data from the Google Sheets
         Tabletop.init({
-            key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',
+            key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pub?output=csv',
             simpleSheet: true,
             callback: function(data) {
                 // Ensure that the data is being fetched correctly
