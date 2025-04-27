@@ -1,196 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Weekly Menu</title>
-  
-<!-- Load TT Fors Bold from your local folder -->
-<style>
-  @font-face {
-    font-family: 'TT Fors';
-    src: url('TT-Fors-Bold.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abbey Road Weekly Menu</title>
+    <style>
+        /* Loading TT Fors font */
+        @font-face {
+            font-family: 'TT Fors';
+            src: url('TT-Fors-Bold.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
 
-  body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: 'TT Fors', sans-serif;
-  }
-</style>
+        /* General styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'TT Fors', sans-serif;
+        }
 
+        /* Menu container for all days */
+        .menu-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: 'Roboto', sans-serif; /* replace with TT Fors later */
-    }
+        /* Each day box */
+        .day-box {
+            width: 300px;
+            margin: 10px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+        }
 
-    #container {
-      position: relative;
-      width: 1920px;
-      height: 1080px;
-      background-image: url('background.jpg'); /* Your background file */
-      background-size: cover;
-      background-position: center;
-      margin: 0 auto;
-    }
+        /* Day title */
+        .day-box h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
-    .menu-box {
-      position: absolute;
-      font-size: 28px;
-      color: #000;
-      text-align: center;
-      overflow: hidden;
-      line-height: 1.2;
-      padding: 5px;
-      word-wrap: break-word;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      text-overflow: ellipsis;
-    }
+        /* Dish styling */
+        .dish {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
 
-    /* --- Position each text box exactly --- */
-    #monday-hot {
-      top: 100px;
-      left: 150px;
-      width: 250px;
-      height: 120px;
-    }
-    #monday-soup {
-      top: 230px;
-      left: 150px;
-      width: 250px;
-      height: 80px;
-    }
-
-    #tuesday-hot {
-      top: 100px;
-      left: 450px;
-      width: 250px;
-      height: 120px;
-    }
-    #tuesday-soup {
-      top: 230px;
-      left: 450px;
-      width: 250px;
-      height: 80px;
-    }
-
-    #wednesday-hot {
-      top: 100px;
-      left: 750px;
-      width: 250px;
-      height: 120px;
-    }
-    #wednesday-soup {
-      top: 230px;
-      left: 750px;
-      width: 250px;
-      height: 80px;
-    }
-
-    #thursday-hot {
-      top: 100px;
-      left: 1050px;
-      width: 250px;
-      height: 120px;
-    }
-    #thursday-soup {
-      top: 230px;
-      left: 1050px;
-      width: 250px;
-      height: 80px;
-    }
-
-    #friday-hot {
-      top: 100px;
-      left: 1350px;
-      width: 250px;
-      height: 120px;
-    }
-    #friday-soup {
-      top: 230px;
-      left: 1350px;
-      width: 250px;
-      height: 80px;
-    }
-  </style>
+        /* Kcal and price styling */
+        .kcal-price {
+            font-size: 16px;
+        }
+    </style>
 </head>
+<body style="background: url('Background.jpg') no-repeat center center fixed; background-size: cover;">
 
-<body>
+<!-- Menu container where the dishes will be displayed -->
+<div class="menu-container" id="menu"></div>
 
-<div id="container">
-  <!-- Dynamic boxes -->
-  <div id="monday-hot" class="menu-box"></div>
-  <div id="monday-soup" class="menu-box"></div>
-
-  <div id="tuesday-hot" class="menu-box"></div>
-  <div id="tuesday-soup" class="menu-box"></div>
-
-  <div id="wednesday-hot" class="menu-box"></div>
-  <div id="wednesday-soup" class="menu-box"></div>
-
-  <div id="thursday-hot" class="menu-box"></div>
-  <div id="thursday-soup" class="menu-box"></div>
-
-  <div id="friday-hot" class="menu-box"></div>
-  <div id="friday-soup" class="menu-box"></div>
-</div>
-
+<!-- Load Tabletop.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0"></script>
 <script>
-  const sheetID = "2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs";
-  const sheetURL = `https://docs.google.com/spreadsheets/d/e/${sheetID}/pub?output=csv`;
+    window.onload = function() {
+        // Initialize Tabletop.js to fetch data from the Google Sheets
+        Tabletop.init({
+            key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',
+            simpleSheet: true,
+            callback: function(data) {
+                // Get the container to append the menu items
+                let menuContainer = document.getElementById('menu');
+                let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-  async function loadMenu() {
-    const response = await fetch(sheetURL);
-    const data = await response.text();
-    const rows = data.split("\n").slice(1); // skip headers
+                // Loop through each day and create a box for each
+                days.forEach(day => {
+                    let dayMenu = data.filter(item => item.Day === day);
+                    let dayBox = document.createElement('div');
+                    dayBox.className = 'day-box';
+                    let dayTitle = document.createElement('h2');
+                    dayTitle.textContent = day;
+                    dayBox.appendChild(dayTitle);
 
-    const menu = {};
+                    // Loop through the menu items for each day
+                    dayMenu.forEach(item => {
+                        let dish = document.createElement('div');
+                        dish.className = 'dish';
+                        dish.textContent = `${item.Type}: ${item.Dish}`;
+                        dayBox.appendChild(dish);
 
-    rows.forEach(row => {
-      const cols = row.split(",");
-      const day = cols[1].trim().toLowerCase(); // assuming Day in column B
-      const hot = cols[2]?.trim();  // Hot Item (column C)
-      const soup = cols[9]?.trim(); // Soup Item (column J)
+                        let kcalPrice = document.createElement('div');
+                        kcalPrice.className = 'kcal-price';
+                        kcalPrice.textContent = `${item.kcal} kcal - £${item.Price}`;
+                        dayBox.appendChild(kcalPrice);
+                    });
 
-      if (day && hot) menu[`${day}-hot`] = hot;
-      if (day && soup) menu[`${day}-soup`] = soup;
-    });
-
-    for (const id in menu) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.innerText = menu[id];
-        fitText(el, 28); // 28 is the base font size
-      }
+                    // Append the day box to the menu container
+                    menuContainer.appendChild(dayBox);
+                });
+            }
+        });
     }
-  }
-
-  // Automatically shrink text if it overflows
-  function fitText(element, maxFontSize) {
-    let fontSize = maxFontSize;
-    element.style.fontSize = fontSize + "px";
-
-    while ((element.scrollHeight > element.offsetHeight || element.scrollWidth > element.offsetWidth) && fontSize > 10) {
-      fontSize--;
-      element.style.fontSize = fontSize + "px";
-    }
-  }
-
-  loadMenu();
 </script>
 
 </body>
