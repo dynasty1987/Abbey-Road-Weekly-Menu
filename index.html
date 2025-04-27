@@ -19,8 +19,10 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
             font-family: 'TT Fors', sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;  /* Ensures the image covers the whole screen */
+            overflow: auto;
         }
 
         /* Menu container for all days */
@@ -28,7 +30,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 50px;  /* Adjust top margin for spacing */
         }
 
         /* Each day box */
@@ -36,8 +38,9 @@
             width: 300px;
             margin: 10px;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.7);  /* Transparent white background */
             border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Day title */
@@ -57,9 +60,20 @@
         .kcal-price {
             font-size: 16px;
         }
+
+        /* Styling the whole page */
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            color: #fff;
+            margin-top: 20px;
+        }
     </style>
 </head>
-<body style="background: url('Background.jpg') no-repeat center center fixed; background-size: cover;">
+<body>
+
+<!-- Page Title -->
+<h1>Abbey Road Weekly Menu</h1>
 
 <!-- Menu container where the dishes will be displayed -->
 <div class="menu-container" id="menu"></div>
@@ -73,6 +87,9 @@
             key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',
             simpleSheet: true,
             callback: function(data) {
+                // Ensure that the data is being fetched correctly
+                console.log(data);  // Check the fetched data in your browser's console
+                
                 // Get the container to append the menu items
                 let menuContainer = document.getElementById('menu');
                 let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
