@@ -7,50 +7,56 @@
 <body>
   <div id="menu"></div>
 
-  <!-- Load Tabletop.js first -->
-  <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/tabletop.min.js"></script>
-
-  <!-- Then your custom script -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      Tabletop.init({
-        key: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pubhtml',
-        simpleSheet: true,
-        callback: function (data) {
-          const menuContainer = document.getElementById('menu');
-          const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    async function loadMenu() {
+      const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS1oAuoPPK2B3bp9AYcnJsiPnhUhaKYnXKIGx81PLXQDM3NcTX0DftPmbF3tJxESiav5MN-CAABuXEs/pub?output=csv');
+      const csvText = await response.text();
 
-          days.forEach(day => {
-            const dayMenu = data.filter(item => item.Day === day);
+      const rows = csvText.split('\n').map(row => row.split(','));
 
-            if (dayMenu.length > 0) {
-              const dayBox = document.createElement('div');
-              dayBox.style.border = '1px solid #ccc';
-              dayBox.style.padding = '10px';
-              dayBox.style.marginBottom = '10px';
-              dayBox.innerHTML = `<h2>${day}</h2>`;
+      const headers = rows[0];
+      const data = rows.slice(1).map(row => {
+        const obj = {};
+        row.forEach((cell, i) => {
+          obj[headers[i]] = cell;
+        });
+        return obj;
+      });
 
-              dayMenu.forEach(item => {
-                if (item["Hot Dishes"]) {
-                  dayBox.innerHTML += `<p><strong>Hot:</strong> ${item["Hot Dishes"]} (${item["Hot Kcal"]}) - ${item["Hot Dish Price"]}</p>`;
-                }
-                if (item["Soup"]) {
-                  dayBox.innerHTML += `<p><strong>Soup:</strong> ${item["Soup"]} (${item["Soup Kcal"]}) - ${item["Soup Price"]}</p>`;
-                }
-                if (item["Deli"]) {
-                  dayBox.innerHTML += `<p><strong>Deli:</strong> ${item["Deli"]} (${item["Deli Kcal"]})</p>`;
-                }
-                if (item["Composite Salads"]) {
-                  dayBox.innerHTML += `<p><strong>Salad:</strong> ${item["Composite Salads"]} (${item["Salad Kcal"]})</p>`;
-                }
-              });
+      const menuContainer = document.getElementById('menu');
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-              menuContainer.appendChild(dayBox);
+      days.forEach(day => {
+        const dayMenu = data.filter(item => item.Day === day);
+
+        if (dayMenu.length > 0) {
+          const dayBox = document.createElement('div');
+          dayBox.style.border = '1px solid #ccc';
+          dayBox.style.padding = '10px';
+          dayBox.style.marginBottom = '10px';
+          dayBox.innerHTML = `<h2>${day}</h2>`;
+
+          dayMenu.forEach(item => {
+            if (item["Hot Dishes"]) {
+              dayBox.innerHTML += `<p><strong>Hot:</strong> ${item["Hot Dishes"]} (${item["Hot Kcal"]}) - ${item["Hot Dish Price"]}</p>`;
+            }
+            if (item["Soup"]) {
+              dayBox.innerHTML += `<p><strong>Soup:</strong> ${item["Soup"]} (${item["Soup Kcal"]}) - ${item["Soup Price"]}</p>`;
+            }
+            if (item["Deli"]) {
+              dayBox.innerHTML += `<p><strong>Deli:</strong> ${item["Deli"]} (${item["Deli Kcal"]})</p>`;
+            }
+            if (item["Composite Salads"]) {
+              dayBox.innerHTML += `<p><strong>Salad:</strong> ${item["Composite Salads"]} (${item["Salad Kcal"]})</p>`;
             }
           });
+
+          menuContainer.appendChild(dayBox);
         }
       });
-    });
+    }
+
+    loadMenu();
   </script>
 </body>
 </html>
